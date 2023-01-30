@@ -1,8 +1,8 @@
 import Slider from "./slider";
 
 export default class MainSlider extends Slider {
-  constructor(btns) {
-    super(btns);
+  constructor(btns, prevModules, nextModules) {
+    super(btns, prevModules, nextModules);
   }
 
   showSlides(n) {
@@ -38,23 +38,39 @@ export default class MainSlider extends Slider {
     this.showSlides((this.slideIndex += n));
   }
 
+  modulesBtn(btns, number) {
+    btns.forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        this.plusSlides(number);
+      });
+    });
+  }
+
+  bindTriggers() {
+    this.btns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        this.plusSlides(1);
+      });
+      btn.parentNode.previousElementSibling.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.slideIndex = 1;
+        this.showSlides(this.slideIndex);
+      });
+    });
+
+    this.modulesBtn(this.prevModules, -1);
+    this.modulesBtn(this.nextModules, 1);
+  }
+
   render() {
-    try {
+    if (this.container) {
       try {
         this.hanson = document.querySelector(".hanson");
       } catch (e) {}
-      this.btns.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          this.plusSlides(1);
-        });
-        btn.parentNode.previousElementSibling.addEventListener("click", (e) => {
-          e.preventDefault();
-          this.slideIndex = 1;
-          this.showSlides(this.slideIndex);
-        });
-      });
-
       this.showSlides(this.slideIndex);
-    } catch (e) {}
+      this.bindTriggers();
+    }
   }
 }
